@@ -1,0 +1,697 @@
+import tkinter as tk
+import random
+
+
+# =========================
+# ЗМІННІ
+# =========================
+
+bomb = 100
+score = 0
+combo = 0
+game_started = False
+difficulty = "Легкий"
+
+
+# =========================
+# НАЛАШТУВАННЯ РІВНІВ
+# =========================
+
+levels = {
+    "Легкий": {
+        "fuse": 100,
+        "speed": 900,
+        "bonus": 5,
+        "target": 40
+    },
+
+    "Середній": {
+        "fuse": 80,
+        "speed": 700,
+        "bonus": 4,
+        "target": 60
+    },
+
+    "Складний": {
+        "fuse": 60,
+        "speed": 550,
+        "bonus": 3,
+        "target": 100
+    },
+
+    "Хардкор": {
+        "fuse": 40,
+        "speed": 400,
+        "bonus": 2,
+        "target": 200
+    },
+
+    "Неможливо": {
+        "fuse": 20,
+        "speed": 300,
+        "bonus": 1,
+        "target": 300
+    },
+
+    "Екстремальний": {
+        "fuse": 15,
+        "speed": 220,
+        "bonus": 1,
+        "target": 500
+    }
+}
+
+
+# =========================
+# ВІКНО
+# =========================
+
+root = tk.Tk()
+root.title("💣 BOMB BLAST")
+root.geometry("700x900")
+root.resizable(False, False)
+root.configure(bg="#10152B")
+
+
+# =========================
+# ЗАГОЛОВОК
+# =========================
+
+title = tk.Label(
+    root,
+    text="💣 BOMB BLAST 💣",
+    font=("Arial", 32, "bold"),
+    fg="#00E5FF",
+    bg="#10152B"
+)
+title.pack(pady=12)
+
+
+label_1 = tk.Label(
+    root,
+    text="ОБЕРИ РІВЕНЬ",
+    font=("Arial", 16, "bold"),
+    fg="white",
+    bg="#10152B"
+)
+label_1.pack()
+
+
+# =========================
+# SCORE
+# =========================
+
+score_label = tk.Label(
+    root,
+    text="SCORE: 0 / 40",
+    font=("Arial", 18, "bold"),
+    fg="#00FF88",
+    bg="#10152B"
+)
+score_label.pack(pady=5)
+
+
+# =========================
+# РАНГ
+# =========================
+
+rank_icon = tk.Label(
+    root,
+    text="🥉",
+    font=("Arial", 50),
+    bg="#10152B"
+)
+rank_icon.pack()
+
+
+rank_label = tk.Label(
+    root,
+    text="НОВАЧОК",
+    font=("Arial", 15, "bold"),
+    fg="#CD7F32",
+    bg="#10152B"
+)
+rank_label.pack()
+
+
+# =========================
+# COMBO
+# =========================
+
+combo_label = tk.Label(
+    root,
+    text="COMBO: x0",
+    font=("Arial", 16, "bold"),
+    fg="#FFD166",
+    bg="#10152B"
+)
+combo_label.pack(pady=5)
+
+
+# =========================
+# FUSE
+# =========================
+
+fuse_label = tk.Label(
+    root,
+    text="FUSE: 100",
+    font=("Arial", 20, "bold"),
+    fg="#00FF88",
+    bg="#10152B"
+)
+fuse_label.pack()
+
+
+# =========================
+# БОМБА
+# =========================
+
+bomb_label = tk.Label(
+    root,
+    text="💣",
+    font=("Arial", 120),
+    bg="#10152B",
+    cursor="hand2"
+)
+bomb_label.pack(pady=15)
+
+
+# =========================
+# ЕФЕКТ
+# =========================
+
+effect_label = tk.Label(
+    root,
+    text="",
+    font=("Arial", 24, "bold"),
+    bg="#10152B"
+)
+effect_label.pack()
+
+
+# =========================
+# РІВЕНЬ
+# =========================
+
+difficulty_label = tk.Label(
+    root,
+    text="Рівень: Легкий | FUSE: 100 | Ціль: 40",
+    font=("Arial", 14, "bold"),
+    fg="#B967FF",
+    bg="#10152B"
+)
+difficulty_label.pack(pady=8)
+
+
+# =========================
+# ВИБІР РІВНЯ
+# =========================
+
+difficulty_frame = tk.Frame(
+    root,
+    bg="#10152B"
+)
+difficulty_frame.pack()
+
+
+def set_difficulty(level):
+
+    global difficulty
+
+    difficulty = level
+
+    data = levels[level]
+
+    difficulty_label.config(
+        text="Рівень: " + level +
+        " | FUSE: " + str(data["fuse"]) +
+        " | Ціль: " + str(data["target"])
+    )
+
+    update_display()
+
+
+# =========================
+# КНОПКИ РІВНІВ
+# =========================
+
+easy_button = tk.Button(
+    difficulty_frame,
+    text="🟢 ЛЕГКИЙ\n40",
+    width=13,
+    height=2,
+    command=lambda: set_difficulty("Легкий"),
+    bg="#164D35",
+    fg="white"
+)
+easy_button.grid(row=0, column=0, padx=3, pady=3)
+
+
+medium_button = tk.Button(
+    difficulty_frame,
+    text="🟡 СЕРЕДНІЙ\n60",
+    width=13,
+    height=2,
+    command=lambda: set_difficulty("Середній"),
+    bg="#66521A",
+    fg="white"
+)
+medium_button.grid(row=0, column=1, padx=3, pady=3)
+
+
+hard_button = tk.Button(
+    difficulty_frame,
+    text="🟠 СКЛАДНИЙ\n100",
+    width=13,
+    height=2,
+    command=lambda: set_difficulty("Складний"),
+    bg="#7A3E00",
+    fg="white"
+)
+hard_button.grid(row=0, column=2, padx=3, pady=3)
+
+
+hardcore_button = tk.Button(
+    difficulty_frame,
+    text="🔴 ХАРДКОР\n200",
+    width=13,
+    height=2,
+    command=lambda: set_difficulty("Хардкор"),
+    bg="#661A2B",
+    fg="white"
+)
+hardcore_button.grid(row=1, column=0, padx=3, pady=3)
+
+
+impossible_button = tk.Button(
+    difficulty_frame,
+    text="💀 НЕМОЖЛИВО\n300",
+    width=13,
+    height=2,
+    command=lambda: set_difficulty("Неможливо"),
+    bg="#30000A",
+    fg="white"
+)
+impossible_button.grid(row=1, column=1, padx=3, pady=3)
+
+
+extreme_button = tk.Button(
+    difficulty_frame,
+    text="☠️ ЕКСТРЕМАЛЬНИЙ\n500",
+    width=13,
+    height=2,
+    command=lambda: set_difficulty("Екстремальний"),
+    bg="#160016",
+    fg="white"
+)
+extreme_button.grid(row=1, column=2, padx=3, pady=3)
+
+
+# =========================
+# РАНГ
+# =========================
+
+def update_rank():
+
+    if score < 10:
+        icon = "🥉"
+        name = "НОВАЧОК"
+        color = "#CD7F32"
+
+    elif score < 25:
+        icon = "🥈"
+        name = "БОЄЦЬ"
+        color = "#C0C0C0"
+
+    elif score < 50:
+        icon = "🥇"
+        name = "МАЙСТЕР"
+        color = "#FFD700"
+
+    elif score < 100:
+        icon = "💎"
+        name = "ЕКСПЕРТ"
+        color = "#00E5FF"
+
+    elif score < 200:
+        icon = "🔥"
+        name = "ЛЕГЕНДА"
+        color = "#FF4D6D"
+
+    else:
+        icon = "👑"
+        name = "BOMB GOD"
+        color = "#FFD700"
+
+    rank_icon.config(text=icon)
+    rank_label.config(
+        text=name,
+        fg=color
+    )
+
+
+# =========================
+# ОНОВЛЕННЯ
+# =========================
+
+def update_display():
+
+    target = levels[difficulty]["target"]
+
+    score_label.config(
+        text="SCORE: " + str(score) +
+        " / " + str(target)
+    )
+
+    combo_label.config(
+        text="COMBO: x" + str(combo)
+    )
+
+    fuse_label.config(
+        text="FUSE: " + str(bomb)
+    )
+
+    if bomb > 50:
+        fuse_label.config(fg="#00FF88")
+
+    elif bomb > 20:
+        fuse_label.config(fg="#FFD166")
+
+    else:
+        fuse_label.config(fg="#FF4D6D")
+
+    update_rank()
+
+
+# =========================
+# ЕФЕКТИ
+# =========================
+
+def show_effect(text, color):
+
+    effect_label.config(
+        text=text,
+        fg=color
+    )
+
+    root.after(
+        500,
+        clear_effect
+    )
+
+
+def clear_effect():
+
+    effect_label.config(
+        text=""
+    )
+
+
+# =========================
+# ПЕРЕВІРКА ПЕРЕМОГИ
+# =========================
+
+def check_win():
+
+    target = levels[difficulty]["target"]
+
+    if score >= target:
+
+        win_game()
+
+        return True
+
+    return False
+
+
+# =========================
+# ПЕРЕМОГА
+# =========================
+
+def win_game():
+
+    global game_started
+
+    game_started = False
+
+    bomb_label.config(
+        text="🏆",
+        fg="#FFD700"
+    )
+
+    label_1.config(
+        text="🏆 ТИ ПЕРЕМІГ!",
+        fg="#FFD700"
+    )
+
+    effect_label.config(
+        text="🎉 ЦІЛЬ ДОСЯГНУТА!",
+        fg="#00FF88"
+    )
+
+    update_display()
+
+
+# =========================
+# КЛІК ПО БОМБІ
+# =========================
+
+def bomb_click(event=None):
+
+    global bomb
+    global score
+    global combo
+
+    if not game_started:
+        return
+
+    if bomb <= 0:
+        return
+
+    bonus = levels[difficulty]["bonus"]
+
+    combo += 1
+
+    # Комбо
+    if combo >= 10:
+
+        bonus += 3
+        score += 2
+
+        show_effect(
+            "🔥 COMBO x10!",
+            "#FFD166"
+        )
+
+    elif combo >= 5:
+
+        bonus += 1
+        score += 1
+
+        show_effect(
+            "⚡ COMBO!",
+            "#00E5FF"
+        )
+
+    else:
+
+        score += 1
+
+        show_effect(
+            "+" + str(bonus) + " FUSE",
+            "#00FF88"
+        )
+
+    # Критичний удар
+    critical = random.randint(1, 10)
+
+    if critical == 10:
+
+        bonus += 3
+        score += 3
+        combo += 1
+
+        show_effect(
+            "💥 CRITICAL!",
+            "#FF4D6D"
+        )
+
+    # Додаємо час
+    bomb += bonus
+
+    # Максимальний FUSE
+    max_fuse = levels[difficulty]["fuse"]
+
+    if bomb > max_fuse:
+        bomb = max_fuse
+
+    update_display()
+
+    # Перевірка перемоги
+    check_win()
+
+
+# =========================
+# ТАЙМЕР
+# =========================
+
+def bomb_timer():
+
+    global bomb
+    global combo
+
+    if not game_started:
+        return
+
+    if bomb <= 0:
+
+        game_over()
+
+        return
+
+    timer_speed = levels[difficulty]["speed"]
+
+    # Коли мало FUSE —
+    # таймер стає швидшим
+
+    if bomb <= 10:
+        timer_speed -= 120
+
+    elif bomb <= 20:
+        timer_speed -= 60
+
+    bomb -= 1
+
+    combo = 0
+
+    update_display()
+
+    if bomb <= 0:
+
+        bomb = 0
+
+        update_display()
+
+        game_over()
+
+        return
+
+    root.after(
+        timer_speed,
+        bomb_timer
+    )
+
+
+# =========================
+# GAME OVER
+# =========================
+
+def game_over():
+
+    global game_started
+    global combo
+
+    game_started = False
+    combo = 0
+
+    bomb_label.config(
+        text="💥",
+        fg="#FF1744"
+    )
+
+    label_1.config(
+        text="💥 БОМБА ВИБУХНУЛА!",
+        fg="#FF1744"
+    )
+
+    effect_label.config(
+        text="GAME OVER!",
+        fg="#FF1744"
+    )
+
+    update_display()
+
+
+# =========================
+# START / RESTART
+# =========================
+
+def start_game(event=None):
+
+    global bomb
+    global score
+    global combo
+    global game_started
+
+    bomb = levels[difficulty]["fuse"]
+    score = 0
+    combo = 0
+    game_started = True
+
+    bomb_label.config(
+        text="💣",
+        fg="white"
+    )
+
+    label_1.config(
+        text="КЛІКАЙ! ДОСЯГНИ ЦІЛІ!",
+        fg="white"
+    )
+
+    show_effect(
+        "READY!",
+        "#00E5FF"
+    )
+
+    update_display()
+
+    bomb_timer()
+
+
+# =========================
+# КНОПКА START
+# =========================
+
+start_button = tk.Button(
+    root,
+    text="▶ START / RESTART",
+    font=("Arial", 16, "bold"),
+    width=22,
+    height=2,
+    bg="#7B2CBF",
+    fg="white",
+    activebackground="#00E5FF",
+    activeforeground="black",
+    command=start_game
+)
+
+start_button.pack(pady=18)
+
+
+# =========================
+# КЛІК ПО БОМБІ
+# =========================
+
+bomb_label.bind(
+    "<Button-1>",
+    bomb_click
+)
+
+
+# =========================
+# ENTER
+# =========================
+
+root.bind(
+    "<Return>",
+    start_game
+)
+
+
+# =========================
+# ПОЧАТОК
+# =========================
+
+update_display()
+
+root.mainloop()
